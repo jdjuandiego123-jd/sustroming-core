@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUSTROMING CORE - EP: INGENIERÍA DE SISTEMAS</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    
+    <style>
+        /* CONFIGURACIÓN BASE INMERSIVA */
+        * { box-sizing: border-box; scroll-behavior: smooth; }
+        body {
+            background-color: #020613;
+            color: #ffffff;
+            font-family: 'VT323', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            margin: 0;
+            gap: 35px;
+        }
+
+        /* CONTENEDORES MAESTROS (TARJETAS COMPACTAS ORIGINALES) */
+        .tarjeta-seccion {
+            background-color: #00020a;
+            border: 3px solid #00d2ff;
+            box-shadow: 0 0 20px #0055ff, inset 0 0 10px #0055ff;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 450px; /* Regresamos al tamaño ideal */
+            width: 100%;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .tarjeta-seccion:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px #0077ff, inset 0 0 15px #0077ff;
+        }
+
+        /* REFUERZO DE DOBLE CAPA NEÓN EN TÍTULOS Y EMOJIS */
+        h1, h2 { 
+            color: #00ffff;
+            text-shadow: 0 0 12px #00aaff, 0 0 25px #0055ff;
+            font-size: 3rem; 
+            margin: 0 0 10px 0;
+        }
+        h2 { font-size: 2.4rem; }
+
+        /* TEXTOS CON MORADO NEÓN HERMOSO */
+        .subtitulo, .marcador {
+            color: #d161ff;
+            text-shadow: 0 0 12px #bc13fe, 0 0 20px #bc13fe;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* ESTILOS DE FORMULARIOS CON RESPLANDOR */
+        .grupo-formulario { text-align: left; margin-bottom: 20px; }
+        label { 
+            display: block; 
+            font-size: 1.3rem; 
+            margin-bottom: 8px; 
+            color: #d0e0ff;
+            text-shadow: 0 0 5px #0055ff;
+        }
+        input, textarea {
+            width: 100%;
+            background-color: #04122c;
+            border: 2px solid #0055ff;
+            border-radius: 4px;
+            color: #ffffff;
+            padding: 10px;
+            font-family: inherit;
+            font-size: 1.2rem;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #00ffaa;
+            box-shadow: 0 0 12px #00ffaa;
+        }
+
+        /* BOTONES ULTRA NEÓN */
+        button, .btn-link {
+            display: inline-block;
+            background-color: #0055ff;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 24px;
+            font-family: inherit;
+            font-size: 1.4rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+            text-shadow: 0 0 5px #000;
+            box-shadow: 0 0 12px #0055ff;
+            text-decoration: none;
+            text-align: center;
+        }
+        button:hover, .btn-link:hover {
+            background-color: #00ffff;
+            color: #000000;
+            box-shadow: 0 0 22px #00ffff;
+            transform: scale(1.02);
+        }
+
+        /* BANDEJA EN VIVO PARA SUGERENCIAS */
+        .pizarra-sugerencias {
+            margin-top: 25px;
+            background: #030d22;
+            border: 2px solid #0055ff;
+            border-radius: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 15px;
+            text-align: left;
+            box-shadow: 0 0 10px rgba(0, 85, 255, 0.3);
+        }
+        .item-sugerencia {
+            border-bottom: 1px dashed #0055ff;
+            padding: 8px 0;
+            font-size: 1.2rem;
+        }
+
+        /* ANIMACIÓN DEL CARRITO MINERO */
+        .via-contenedor {
+            background: #02040a;
+            border: 2px solid #bc13fe;
+            border-radius: 8px;
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 0 10px rgba(188, 19, 254, 0.2);
+        }
+        .via-linea {
+            color: #8a2be2;
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            white-space: nowrap;
+            width: 100%;
+        }
+        .carrito-movil {
+            position: absolute;
+            font-size: 2.8rem; 
+            bottom: -5px;
+            animation: moverCarro 6s linear infinite, balanceo 0.4s ease-in-out infinite alternate;
+        }
+        @keyframes balanceo {
+            0% { transform: scaleX(-1) rotate(-3deg); }
+            100% { transform: scaleX(-1) rotate(3deg); }
+        }
+        @keyframes moverCarro {
+            0% { left: -10%; transform: scaleX(-1); }
+            100% { left: 110%; transform: scaleX(-1); }
+        }
+
+
+        /* REJILLA DEL JUEGO 8x8 COMPACTA */
+        .paneles-info-juego {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #00ffaa;
+            text-shadow: 0 0 5px #00ffaa;
+        }
+        .cuadrgrid-8x8 {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 5px;
+            max-width: 320px;
+            margin: 0 auto 20px auto;
+        }
+        .bloque-pro {
+            background-color: #06183a;
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 4px #0044cc;
+            aspect-ratio: 1;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        .bloque-pro:hover {
+            background-color: #0a265c;
+            transform: scale(1.08);
+            box-shadow: 0 0 10px #00ffff;
+            z-index: 2;
+        }
+        .bloque-pro.seguro {
+            background-color: #00ffaa15;
+            border-color: #00ffaa;
+            color: #00ffaa;
+            text-shadow: 0 0 5px #00ffaa;
+            cursor: default;
+        }
+        .bloque-pro.lava {
+            background-color: #ff334425;
+            border-color: #ff3344;
+            box-shadow: 0 0 12px #ff3344;
+            cursor: default;
+        }
+
+        /* REPOSITORIO ACADÉMICO */
+        .grid-carpetas {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .carpeta-btn {
+            background: #04122c;
+            border: 2px solid #0044cc;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .carpeta-btn:hover {
+            border-color: #d161ff;
+            box-shadow: 0 0 10px #bc13fe;
+            transform: translateX(3px);
+        }
+
+        /* TARJETAS DELEGADOS */
+        .info-delegado {
+            background-color: #04122c;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: left;
+            transition: all 0.2s ease;
+            font-family: 'Courier New', Courier, monospace;
+
+        }
+        .info-delegado:hover { transform: translateX(5px); }
+
+        /* OPTIMIZACIÓN CELULARES */
+        @media (max-width: 480px) {
+            body { padding: 20px 10px; gap: 25px; }
+            .tarjeta-seccion { padding: 20px 15px; }
+            h1 { font-size: 2.3rem; }
+            h2 { font-size: 1.8rem; }
+            .cuadrgrid-8x8 { max-width: 280px; gap: 4px; }
+            .grid-carpetas { grid-template-columns: 1fr; }
+        }
+                /* NUEVOS ESTILOS PARA LA SIMETRÍA MORADO NEÓN */
+        .tarjeta-seccion.tarjeta-morada-neon {
+            border: 3px solid #bc13fe;
+            box-shadow: 0 0 20px #bc13fe, inset 0 0 10px #bc13fe;
+        }
+        .tarjeta-seccion.tarjeta-morada-neon:hover {
+            box-shadow: 0 0 30px #d161ff, inset 0 0 15px #d161ff;
+        }
+        .titulo-morado-neon {
+            color: #d161ff;
+            text-shadow: 0 0 12px #bc13fe, 0 0 25px #8a2be2;
+        }
+        .carpeta-btn.btn-carpeta-morada {
+            background: #04122c;
+            border: 2px solid #0044cc;
+            color: #d0e0ff;
+            text-shadow: 0 0 5px #0055ff;
+        }
+        .carpeta-btn.btn-carpeta-morada:hover {
+            border-color: #d161ff;
+            box-shadow: 0 0 15px #bc13fe, inset 0 0 5px #bc13fe;
+            transform: scale(1.05);
+        }
+
+        /* BOTÓN CON COMBINACIÓN DE COLORES IMPRESIONANTE (DEGRADADO NEÓN VIBRANTE) */
+        .btn-link.btn-drive-impresionante {
+            background: linear-gradient(135deg, #bc13fe 0%, #00ffff 50%, #bc13fe 100%);
+            background-size: 200% auto;
+            color: #ffffff;
+            text-shadow: 0 0 8px #000000, 0 0 3px #000000;
+            box-shadow: 0 0 15px rgba(188, 19, 254, 0.6), 0 0 25px rgba(0, 255, 255, 0.4);
+            animation: brilloGradiente 4s ease infinite;
+        }
+        .btn-link.btn-drive-impresionante:hover {
+            background-position: right center;
+            box-shadow: 0 0 25px #d161ff, 0 0 35px #00ffff;
+            color: #ffffff;
+            transform: scale(1.02);
+        }
+
+        /* Animación fluida para el fondo del botón de Drive */
+        @keyframes brilloGradiente {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- SECCIÓN 1: BUZÓN DE PROPUESTAS -->
+    <section class="tarjeta-seccion" id="buzon">
+        <h1>🐟 SUSTROMING CORE 🐟</h1>
+        <div class="subtitulo">EP: INGENIERÍA DE SISTEMAS</div>
+        <form id="formBuzon">
+            <div class="grupo-formulario">
+                <label>TU NOMBRE / ALIAS (OPCIONAL):</label>
+                <input type="text" id="inputNombre" placeholder="Ej. Paolo_Turica">
+            </div>
+            <div class="grupo-formulario">
+                <label>TU PROPUESTA O SUGERENCIA DE BIENESTAR:</label>
+                <textarea id="inputTexto" rows="3" placeholder="Escribe tu idea aquí..."></textarea>
+            </div>
+            <button type="button" onclick="agregarSugerenciaEnVivo()">ENVIAR SUGERENCIA</button>
+        </form>
+
+        <div class="pizarra-sugerencias" id="cajaBandeja">
+            <div class="item-sugerencia" style="color: #6080b0; text-align: center;">El buzón está vacío. ¡Envía la primera propuesta!</div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN: EL CARRITO RUMBO AL SHOW (ANIMACIÓN FLUIDA) -->
+    <section class="tarjeta-seccion" style="border-color: #bc13fe; box-shadow: 0 0 20px #bc13fe, inset 0 0 10px #bc13fe;">
+                <h2 style="color: #d161ff; text-shadow: 0 0 15px #bc13fe, 0 0 30px #bc13fe, 0 0 45px #8a2be2;">✨ EL CARRITO RUMBO AL ÉXITO ✨</h2>
+
+        <div class="via-contenedor">
+            <div class="via-linea">---------------------------------------------</div>
+            <div class="carrito-movil">🚙</div>
+        </div>
+        <p style="font-size: 1.3rem; color: #fff; margin-top: 10px;">Procesando ideas, ejecutando el futuro. ¡Sustroming avanza!</p>
+    </section>
+
+    <!-- SECCIÓN 2: MINIJUEGO PRO 8x8 (TABLERO ASIGNADO) -->
+    <section class="tarjeta-seccion" id="juego">
+        <h2>🐙 BUSCAMINAS MARINO 🐙</h2>
+        <div class="paneles-info-juego">
+            <div id="marcadorPuntos" style="text-shadow: 0 0 8px #00ffaa; color: #00ffaa;">PUNTOS: 0</div>
+            <div class="marcador" id="estadoJuego">ESTADO: JUGANDO</div>
+        </div>
+        <div class="cuadrgrid-8x8" id="tableroPro">
+            <!-- Los 64 bloques se generan con JavaScript -->
+        </div>
+        <button onclick="reiniciarJuegoPro()">VOLVER A MEZCLAR EL MAR</button>
+    </section>
+
+    <!-- SECCIÓN 3: DATABASE ACADÉMICA CON TU ENLACE REAL -->
+    <section class="tarjeta-seccion tarjeta-morada-neon" id="repositorio">
+
+        <h2 class="titulo-morado-neon">🔮 DATABASE ACADÉMICA 🔮</h2>
+        <p style="font-size: 1.3rem; color: #f0dbff; margin-bottom: 20px;">Material de estudio de Ingeniería de Sistemas organizado por carpetas:</p>
+        
+        <div class="grid-carpetas">
+            <div class="carpeta-btn btn-carpeta-morada">🔮 CALCULO 2</div>
+            <div class="carpeta-btn btn-carpeta-morada">🔮 FISICA I</div>
+            <div class="carpeta-btn btn-carpeta-morada">🔮 QUIMICA</div>
+            <div class="carpeta-btn btn-carpeta-morada">🔮 PROGRAMACIÓN</div>
+        </div>
+
+        <!-- Enlace real de Google Drive asignado -->
+        <a href="https://drive.google.com/drive/folders/1dXeCo9GZzvA1pJ38Yp72bXxh4u6vrjkD" target="_blank" class="btn-link btn-drive-impresionante" style="margin-top: 15px;">ACCEDER AL SERVIDOR DRIVE</a>
+    </section>
+
+    <!-- SECCIÓN 4: ADMINISTRADORES DEL SISTEMA -->
+    <section class="tarjeta-seccion" id="delegados">
+        <h2>👥ADMINISTRADORES DEL SISTEMA👥</h2>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <div class="info-delegado" style="border: 2px dashed #00ffff; box-shadow: 0 0 8px #0055ff;">
+                <span style="color: #00f0ff; text-shadow: 0 0 10px #0055ff; font-size: 1.4rem; font-weight: bold;">👑 ROOT:</span>
+                <p style="margin: 5px 0 0 0; font-size: 1.3rem; color: #fff;">Juan Diego</p>
+            </div>
+
+            <div class="info-delegado" style="border: 2px dashed #bc13fe; box-shadow: 0 0 8px #bc13fe;">
+                <span style="color: #d161ff; text-shadow: 0 0 10px #bc13fe; font-size: 1.4rem; font-weight: bold;">✨ SYSADMIN 01:</span>
+                <p style="margin: 5px 0 0 0; font-size: 1.3rem; color: #fff;">Sergio Leonardo</p>
+            </div>
+
+            <div class="info-delegado" style="border: 2px dashed #bc13fe; box-shadow: 0 0 8px #bc13fe;">
+                <span style="color: #d161ff; text-shadow: 0 0 10px #bc13fe; font-size: 1.4rem; font-weight: bold;">✨ SYSADMIN 02:</span>
+                <p style="margin: 5px 0 0 0; font-size: 1.3rem; color: #fff;">Paolo Renato</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ENLACE DEL MOTOR SCRIPT -->
+    <script src="script.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
